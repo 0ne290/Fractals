@@ -1,21 +1,26 @@
 #include "../Core/Exceptions/Critical.h"
+#include "../Core/Interfaces/ILogger.h"
+#include "../Infrastructure/Logger.h"
+#include "../Infrastructure/Vulkan.h"
+#include <spdlog/common.h>
+#include <memory>
 
 int main()
 {
-    //const auto logger = logging::LoggerCreator::create(spdlog::level::trace);
+    const shared_ptr<Fractals::Core::Interfaces::ILogger> logger =
+        Fractals::Infrastructure::Logger::Create(spdlog::level::trace);
 
     try
     {
-        //const auto vulkanFacadeCreator = vulkan::VulkanFacadeCreator(logger);
+        const auto vulkan = Fractals::Infrastructure::Vulkan::Create(logger);
 
-        //const auto vulkanFacade = vulkanFacadeCreator.create();
-        //vulkanFacade->logPhysicalDevices();
+        vulkan->LogPhysicalDevices();
 
         return 0;
     }
-    catch (const Fractals::Core::Exceptions::Critical&)
+    catch (const Fractals::Core::Exceptions::Critical& e)
     {
-        //logger->instance->critical(ex.what());
+        logger->Critical(e.what());
 
         return 1;
     }

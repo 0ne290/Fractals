@@ -1,10 +1,9 @@
 #include "Critical.h"
 #include <string>
-#include <type_traits>
 
 namespace Fractals::Core::Exceptions
 {
-    Critical::Critical(std::string message) : _message(std::move(message)) {}
+    Critical::Critical(const string& message) : _message(message) {}
 
     const char* Critical::what() const noexcept
     {

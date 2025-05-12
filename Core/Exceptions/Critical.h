@@ -3,6 +3,8 @@
 #include <exception>
 #include <string>
 
+using std::string;
+
 namespace Fractals::Core::Exceptions
 {
     class Critical final : public std::exception
@@ -12,10 +14,10 @@ namespace Fractals::Core::Exceptions
         // Constructors
         Critical() = delete;
 
-        explicit Critical(std::string message);
+        explicit Critical(const string& message);
 
         // Copy constructors
-        Critical(const Critical&) = delete;
+        Critical(const Critical&) = default;
 
         Critical(Critical&&) = delete;
 
@@ -33,6 +35,6 @@ namespace Fractals::Core::Exceptions
     private:
 
         // Fields
-        const std::string _message;
+        const string _message;
     };
 }
