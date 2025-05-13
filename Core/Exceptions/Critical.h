@@ -1,12 +1,15 @@
 #pragma once
 
 #include <exception>
-#include <string>
-
-using std::string;
+#include "../Typedefs.h"
+#include <memory>
 
 namespace Fractals::Core::Exceptions
 {
+    class Critical;
+    using SharedCritical = std::shared_ptr<Critical>;
+    #define MAKE_SHARED_CRITICAL std::make_shared<Critical>
+
     class Critical final : public std::exception
     {
     public:
@@ -14,10 +17,10 @@ namespace Fractals::Core::Exceptions
         // Constructors
         Critical() = delete;
 
-        explicit Critical(const string& message);
+        explicit Critical(const SharedString&);
 
         // Copy constructors
-        Critical(const Critical&) = default;
+        Critical(const Critical&) = delete;
 
         Critical(Critical&&) = delete;
 
@@ -30,11 +33,13 @@ namespace Fractals::Core::Exceptions
         //~Critical() override = delete;
 
         // Methods
-        [[nodiscard]] const char* what() const noexcept override;
+        static SharedCritical Create(const SharedString&);
+
+        const char* what() const noexcept override;
 
     private:
 
         // Fields
-        const string _message;
+        const SharedString _message;
     };
 }

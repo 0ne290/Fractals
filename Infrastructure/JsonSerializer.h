@@ -1,6 +1,5 @@
 #pragma once
-#include <string>
-#include <vector>
+#include "../Core/Typedefs.h"
 #include <vulkan/vulkan_core.h>
 
 namespace Fractals::Infrastructure
@@ -25,7 +24,7 @@ namespace Fractals::Infrastructure
         ~JsonSerializer() = delete;
 
         // Methods
-        static std::string ToJson(const std::vector<VkPhysicalDevice>&,
-            void (*&)(const VkPhysicalDevice&, VkPhysicalDeviceProperties&));
+        static SharedString ToJson(const SharedVector<VkPhysicalDevice>,
+            void (*const getProperties)(const VkPhysicalDevice, VkPhysicalDeviceProperties*));
     };
 }

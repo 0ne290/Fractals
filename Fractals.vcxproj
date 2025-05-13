@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core\Exceptions\Critical.cpp" />
+    <ClCompile Include="Core\Interfaces\ILogger.cpp" />
     <ClCompile Include="Desktop\Main.cpp" />
     <ClCompile Include="Infrastructure\Converter.cpp" />
     <ClCompile Include="Infrastructure\JsonSerializer.cpp" />
@@ -169,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="Core\Exceptions\Critical.h" />
     <ClInclude Include="Core\Interfaces\ILogger.h" />
+    <ClInclude Include="Core\Typedefs.h" />
     <ClInclude Include="Infrastructure\Converter.h" />
     <ClInclude Include="Infrastructure\JsonSerializer.h" />
     <ClInclude Include="Infrastructure\Logger.h" />

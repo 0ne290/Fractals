@@ -1,20 +1,22 @@
 #pragma once
 
 #include <vulkan/vulkan_core.h>
-#include <memory>
 #include "../Core/Interfaces/ILogger.h"
-
-using std::shared_ptr;
+#include <memory>
 
 namespace Fractals::Infrastructure
 {
-	class Vulkan
+    class Vulkan;
+    using SharedVulkan = std::shared_ptr<Vulkan>;
+    #define MAKE_SHARED_VULKAN std::make_shared<Vulkan>
+
+    class Vulkan
 	{
 	public:
         // Constructors
         Vulkan() = delete;
 
-        Vulkan(const VkInstance&, const shared_ptr<Fractals::Core::Interfaces::ILogger>&);
+        Vulkan(const VkInstance&, const Fractals::Core::Interfaces::SharedILogger&);
 
         // Copy constructors
         Vulkan(const Vulkan&) = delete;
@@ -30,7 +32,7 @@ namespace Fractals::Infrastructure
         ~Vulkan();
 
         // Methods
-        static shared_ptr<Vulkan> Create(const shared_ptr<Fractals::Core::Interfaces::ILogger>&);
+        static SharedVulkan Create(const Fractals::Core::Interfaces::SharedILogger&);
 
         void LogPhysicalDevices() const;
 
@@ -45,6 +47,6 @@ namespace Fractals::Infrastructure
         // Fields
         const VkInstance _instance;
 
-        const shared_ptr<Fractals::Core::Interfaces::ILogger> _logger;
+        const Fractals::Core::Interfaces::SharedILogger _logger;
 	};
 }

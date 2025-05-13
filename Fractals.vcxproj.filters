@@ -33,6 +33,9 @@
     <ClCompile Include="Infrastructure\Vulkan.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Interfaces\ILogger.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Exceptions\Critical.h">
@@ -51,6 +54,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Infrastructure\Vulkan.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Typedefs.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

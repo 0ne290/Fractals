@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include "../Core/Typedefs.h"
 #include <vulkan/vulkan_core.h>
 
 namespace Fractals::Infrastructure
@@ -24,6 +24,6 @@ namespace Fractals::Infrastructure
         ~Converter() = delete;
 
         // Methods
-        static std::string ToString(const VkPhysicalDeviceType&);
+        static SharedString ToString(const VkPhysicalDeviceType);
 	};
 }

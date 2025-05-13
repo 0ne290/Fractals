@@ -1,21 +1,27 @@
 #pragma once
 #include "../Core/Interfaces/ILogger.h"
-#include <memory>
-#include <string>
+#include "../Core/Typedefs.h"
 #include <spdlog/logger.h>
 #include <spdlog/common.h>
+#include <memory>
 
 using std::shared_ptr;
 
 namespace Fractals::Infrastructure
 {
+    using SharedSpdLogger = std::shared_ptr<spdlog::logger>;
+
+    class Logger;
+    using SharedLogger = std::shared_ptr<Logger>;
+    #define MAKE_SHARED_LOGGER std::make_shared<Logger>
+
     class Logger : public Fractals::Core::Interfaces::ILogger
     {
     public:
         // Constructors
         Logger() = delete;
 
-        Logger(const std::shared_ptr<spdlog::logger>&);
+        Logger(const SharedSpdLogger&);
 
         // Copy constructors
         Logger(const Logger&) = delete;
@@ -31,18 +37,18 @@ namespace Fractals::Infrastructure
         ~Logger();
 
         // Methods
-        static shared_ptr<Logger> Create(const spdlog::level::level_enum&);
+        static SharedLogger Create(const spdlog::level::level_enum);
 
-        void Trace(const string&) const override;
+        void Trace(const SharedString) const override;
 
-        void Info(const string&) const override;
+        void Info(const SharedString) const override;
 
-        void Warn(const string&) const override;
+        void Warn(const SharedString) const override;
 
-        void Critical(const string&) const override;
+        void Critical(const SharedString) const override;
 
     private:
         // Fields
-        const shared_ptr<spdlog::logger> _logger;
+        const SharedSpdLogger _logger;
     };
 }
