@@ -5,6 +5,10 @@
 
 namespace Fractals::Infrastructure
 {
+    class Converter;
+    using SharedConverter = std::shared_ptr<Converter>;
+    #define MAKE_SHARED_CONVERTER std::make_shared<Converter>
+
 	class Converter
 	{
 	public:
@@ -24,9 +28,11 @@ namespace Fractals::Infrastructure
         Converter& operator=(Converter&&) = delete;
 
         // Destructors
-        ~Converter() = delete;
+        ~Converter() = default;
 
         // Methods
+        static SharedConverter Create(const Fractals::Core::Interfaces::SharedILogger&);
+
         SharedString ToString(const VkPhysicalDeviceType);
 
     private:

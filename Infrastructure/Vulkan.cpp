@@ -8,19 +8,23 @@
 
 namespace Fractals::Infrastructure
 {
-	Vulkan::~Vulkan()
-	{
-        vkDestroyInstance(_instance, nullptr);
-		_logger->Info(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "vulkan destroyed"));
-	}
+    Vulkan::Vulkan(const Fractals::Core::Interfaces::SharedILogger& logger, const Fractals::Infrastructure::SharedJsonSerializer& jsonSerializer)
+        : _logger(logger), _jsonSerializer(jsonSerializer) {
+    }
 
-	SharedVulkan Vulkan::Create(const Fractals::Core::Interfaces::SharedILogger& logger)
+    SharedVulkan Vulkan::Create(const Fractals::Core::Interfaces::SharedILogger& logger, const Fractals::Infrastructure::SharedJsonSerializer& jsonSerializer)
 	{
-        const auto ret = MAKE_SHARED_VULKAN(logger);
+        const auto ret = MAKE_SHARED_VULKAN(logger, jsonSerializer);
 		ret->createInstance();
 		logger->Info(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "vulkan created"));
 
 		return ret;
+	}
+
+	Vulkan::~Vulkan()
+	{
+        vkDestroyInstance(_instance, nullptr);
+		_logger->Info(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "vulkan destroyed"));
 	}
 
     void Vulkan::createInstance() {
@@ -42,7 +46,7 @@ namespace Fractals::Infrastructure
         }
 
         // Logging layers
-        const auto layersJson = JsonSerializer::ToJson(layers);
+        const auto layersJson = _jsonSerializer->ToJson(layers);
         _logger->Trace(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "layers", *layersJson));
 
         // Get extension names for enable them all
@@ -63,15 +67,15 @@ namespace Fractals::Infrastructure
         }
 
         // Logging extensions
-        const auto extensionsJson = JsonSerializer::ToJson(extensions);
-        _logger->Trace(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "extensions", *extensions));
+        const auto extensionsJson = _jsonSerializer->ToJson(extensions);
+        _logger->Trace(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "extensions", *extensionsJson));
 
         // Create instance
         VkInstance instance;
 
         constexpr VkApplicationInfo applicationInfo = {
             VK_STRUCTURE_TYPE_APPLICATION_INFO, nullptr, "vulkan_sandbox", 1,
-            "vulkan_sandbox", 1, VK_MAKE_API_VERSION(1, 4, 309, 0)
+            "vulkan_sandbox", 1, VK_MAKE_VERSION(1, 4, 309)
         };
 
         const VkInstanceCreateInfo createInfo = {
@@ -79,16 +83,13 @@ namespace Fractals::Infrastructure
             layerNames->data(), extensionCount, extensionNames->data()
         };
 
-        const auto result = vkCreateInstance(&createInfo, nullptr, &instance);
+        result = vkCreateInstance(&createInfo, nullptr, &instance);
         if (result != VK_SUCCESS)
             throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "failed to create instance", R"({})"));
 
         _instance = instance;
         _logger->Debug(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "instance created"));
     }
-
-    Vulkan::Vulkan(const Fractals::Core::Interfaces::SharedILogger& logger)
-        : _logger(logger) { }
 
     void Vulkan::LogPhysicalDevices() const
     {
@@ -114,7 +115,7 @@ namespace Fractals::Infrastructure
             [](const VkPhysicalDevice device, VkPhysicalDeviceFeatures* features) {
                 vkGetPhysicalDeviceFeatures(device, features);
             };
-        const auto devicesJson = JsonSerializer::ToJson(physicalDevices, getProperties);
+        const auto devicesJson = _jsonSerializer->ToJson(physicalDevices, getProperties);
 
         // Logging
         _logger->Trace(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "physical devices", *devicesJson));

@@ -9,6 +9,11 @@ namespace Fractals::Infrastructure
     Converter::Converter(const Fractals::Core::Interfaces::SharedILogger& logger)
         : _logger(logger) { }
 
+    SharedConverter Converter::Create(const Fractals::Core::Interfaces::SharedILogger& logger)
+    {
+        return MAKE_SHARED_CONVERTER(logger);
+    }
+
     SharedString Converter::ToString(const VkPhysicalDeviceType deviceType)
     {
         switch (deviceType)

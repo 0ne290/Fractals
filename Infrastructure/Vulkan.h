@@ -2,6 +2,7 @@
 
 #include <vulkan/vulkan_core.h>
 #include "../Core/Interfaces/ILogger.h"
+#include "JsonSerializer.h"
 #include <memory>
 
 namespace Fractals::Infrastructure
@@ -16,7 +17,7 @@ namespace Fractals::Infrastructure
         // Constructors
         Vulkan() = delete;
 
-        Vulkan(const Fractals::Core::Interfaces::SharedILogger&);
+        Vulkan(const Fractals::Core::Interfaces::SharedILogger&, const Fractals::Infrastructure::SharedJsonSerializer&);
 
         // Copy constructors
         Vulkan(const Vulkan&) = delete;
@@ -32,7 +33,7 @@ namespace Fractals::Infrastructure
         ~Vulkan();
 
         // Methods
-        static SharedVulkan Create(const Fractals::Core::Interfaces::SharedILogger&);
+        static SharedVulkan Create(const Fractals::Core::Interfaces::SharedILogger&, const Fractals::Infrastructure::SharedJsonSerializer&);
 
         void LogPhysicalDevices() const;
 
@@ -44,11 +45,13 @@ namespace Fractals::Infrastructure
         // Methods
         void createInstance();
 
-        void createLogicDevice();
+        //void createLogicDevice();
 
         // Fields
         VkInstance _instance;
 
         const Fractals::Core::Interfaces::SharedILogger _logger;
+
+        const Fractals::Infrastructure::SharedJsonSerializer _jsonSerializer;
 	};
 }

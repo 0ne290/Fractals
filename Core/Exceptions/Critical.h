@@ -30,7 +30,7 @@ namespace Fractals::Core::Exceptions
         Critical& operator=(Critical&&) = delete;
 
         // Destructors
-        //~Critical() override = delete;
+        ~Critical() override = default;
 
         // Methods
         static SharedCritical Create(const SharedString&);

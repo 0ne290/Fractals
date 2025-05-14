@@ -5,6 +5,8 @@
 #include <spdlog/common.h>
 #include <memory>
 #include "../Core/Typedefs.h"
+#include "../Infrastructure/Converter.h"
+#include "../Infrastructure/JsonSerializer.h"
 
 int main()
 {
@@ -13,7 +15,10 @@ int main()
 
     try
     {
-        const auto vulkan = Fractals::Infrastructure::Vulkan::Create(logger);
+        const auto converter = Fractals::Infrastructure::Converter::Create(logger);
+        const auto jsonSerializer = Fractals::Infrastructure::JsonSerializer::Create(converter);
+
+        const auto vulkan = Fractals::Infrastructure::Vulkan::Create(logger, jsonSerializer);
         vulkan->LogPhysicalDevices();
 
         return 0;

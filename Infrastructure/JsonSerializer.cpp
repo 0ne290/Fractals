@@ -6,6 +6,14 @@
 
 namespace Fractals::Infrastructure
 {
+    JsonSerializer::JsonSerializer(const Fractals::Infrastructure::SharedConverter& converter)
+        : _converter(converter) { }
+
+    SharedJsonSerializer JsonSerializer::Create(const Fractals::Infrastructure::SharedConverter& converter)
+    {
+        return MAKE_SHARED_JSON_SERIALIZER(converter);
+    }
+
     SharedString JsonSerializer::ToJson(const SharedVector<VkPhysicalDevice> devices,
         void(* const getProperties)(const VkPhysicalDevice, VkPhysicalDeviceProperties*))
     {
@@ -20,7 +28,7 @@ namespace Fractals::Infrastructure
                 properties.driverVersion,
                 properties.vendorID,
                 properties.deviceID,
-                *Converter::ToString(properties.deviceType),
+                *_converter->ToString(properties.deviceType),
                 properties.deviceName
             ));
         }
@@ -32,8 +40,66 @@ namespace Fractals::Infrastructure
             properties.driverVersion,
             properties.vendorID,
             properties.deviceID,
-            *Converter::ToString(properties.deviceType),
+            *_converter->ToString(properties.deviceType),
             properties.deviceName
+        ));
+
+        ret->append("]");
+
+        return ret;
+    }
+
+    SharedString JsonSerializer::ToJson(const SharedVector<VkLayerProperties> layers)
+    {
+        auto layersLastIndex = layers->size() - 1;
+
+        SharedString ret = MAKE_SHARED_STRING("[");
+
+        for (auto i = 0; i < layersLastIndex; i++) {
+            auto& layer = (*layers)[i];
+            ret->append(std::format(
+                R"({{"layerName":"{}","specVersion":{},"implementationVersion":{},"description":"{}"}},)",
+                layer.layerName,
+                layer.specVersion,
+                layer.implementationVersion,
+                layer.description
+            ));
+        }
+
+        auto& layer = (*layers)[layersLastIndex];
+        ret->append(std::format(
+            R"({{"layerName":"{}","specVersion":{},"implementationVersion":{},"description":"{}"}})",
+            layer.layerName,
+            layer.specVersion,
+            layer.implementationVersion,
+            layer.description
+        ));
+
+        ret->append("]");
+
+        return ret;
+    }
+
+    SharedString JsonSerializer::ToJson(const SharedVector<VkExtensionProperties> extensions)
+    {
+        auto extensionsLastIndex = extensions->size() - 1;
+
+        SharedString ret = MAKE_SHARED_STRING("[");
+
+        for (auto i = 0; i < extensionsLastIndex; i++) {
+            auto& extension = (*extensions)[i];
+            ret->append(std::format(
+                R"({{"extensionName":"{}","specVersion":{}}},)",
+                extension.extensionName,
+                extension.specVersion
+            ));
+        }
+
+        auto& extension = (*extensions)[extensionsLastIndex];
+        ret->append(std::format(
+            R"({{"extensionName":"{}","specVersion":{}}})",
+            extension.extensionName,
+            extension.specVersion
         ));
 
         ret->append("]");

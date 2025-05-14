@@ -560,7 +560,10 @@ FodyWeavers.xsd
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
-### Log files ###
+### Application logs ###
 /log.json
+
+### Vulkan logs ###
+*.gfxr
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,clion,visualstudio,visualstudiocode
