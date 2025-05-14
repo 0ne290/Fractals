@@ -58,6 +58,11 @@ namespace Fractals::Infrastructure
 		_logger->trace(*message);
 	}
 
+	void Logger::Debug(const SharedString message) const
+	{
+		_logger->debug(*message);
+	}
+
 	void Logger::Info(const SharedString message) const
 	{
 		_logger->info(*message);
@@ -66,6 +71,11 @@ namespace Fractals::Infrastructure
 	void Logger::Warn(const SharedString message) const
 	{
 		_logger->warn(*message);
+	}
+
+	void Logger::Error(const SharedString message) const
+	{
+		_logger->error(*message);
 	}
 
 	void Logger::Critical(const SharedString message) const

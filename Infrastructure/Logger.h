@@ -41,9 +41,13 @@ namespace Fractals::Infrastructure
 
         void Trace(const SharedString) const override;
 
+        void Debug(const SharedString) const override;
+
         void Info(const SharedString) const override;
 
         void Warn(const SharedString) const override;
+
+        void Error(const SharedString) const override;
 
         void Critical(const SharedString) const override;
 

@@ -32,9 +32,13 @@ namespace Fractals::Core::Interfaces
 	public:
         virtual void Trace(const SharedString) const = 0;
 
+        virtual void Debug(const SharedString) const = 0;
+
 		virtual void Info(const SharedString) const = 0;
 
         virtual void Warn(const SharedString) const = 0;
+
+        virtual void Error(const SharedString) const = 0;
 
         virtual void Critical(const SharedString) const = 0;
 	};

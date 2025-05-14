@@ -16,7 +16,7 @@ namespace Fractals::Infrastructure
         // Constructors
         Vulkan() = delete;
 
-        Vulkan(const VkInstance&, const Fractals::Core::Interfaces::SharedILogger&);
+        Vulkan(const Fractals::Core::Interfaces::SharedILogger&);
 
         // Copy constructors
         Vulkan(const Vulkan&) = delete;
@@ -42,10 +42,12 @@ namespace Fractals::Infrastructure
 
     private:
         // Methods
-        static VkInstance createInstance();
+        void createInstance();
+
+        void createLogicDevice();
 
         // Fields
-        const VkInstance _instance;
+        VkInstance _instance;
 
         const Fractals::Core::Interfaces::SharedILogger _logger;
 	};

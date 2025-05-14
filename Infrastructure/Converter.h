@@ -1,6 +1,7 @@
 #pragma once
 #include "../Core/Typedefs.h"
 #include <vulkan/vulkan_core.h>
+#include "../Core/Interfaces/ILogger.h"
 
 namespace Fractals::Infrastructure
 {
@@ -9,6 +10,8 @@ namespace Fractals::Infrastructure
 	public:
         // Constructors
         Converter() = delete;
+
+        Converter(const Fractals::Core::Interfaces::SharedILogger&);
 
         // Copy constructors
         Converter(const Converter&) = delete;
@@ -24,6 +27,10 @@ namespace Fractals::Infrastructure
         ~Converter() = delete;
 
         // Methods
-        static SharedString ToString(const VkPhysicalDeviceType);
+        SharedString ToString(const VkPhysicalDeviceType);
+
+    private:
+        // Fields
+        const Fractals::Core::Interfaces::SharedILogger _logger;
 	};
 }
