@@ -2,6 +2,7 @@
 #include "../Core/Typedefs.h"
 #include <vulkan/vulkan_core.h>
 #include "../Core/Interfaces/ILogger.h"
+#include <memory>
 
 namespace Fractals::Infrastructure
 {
@@ -34,6 +35,8 @@ namespace Fractals::Infrastructure
         static SharedConverter Create(const Fractals::Core::Interfaces::SharedILogger&);
 
         SharedString ToString(const VkPhysicalDeviceType);
+
+        SharedString ToString(const VkResult);
 
     private:
         // Fields

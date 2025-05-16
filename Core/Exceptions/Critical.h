@@ -13,7 +13,6 @@ namespace Fractals::Core::Exceptions
     class Critical final : public std::exception
     {
     public:
-
         // Constructors
         Critical() = delete;
 
@@ -38,7 +37,6 @@ namespace Fractals::Core::Exceptions
         const char* what() const noexcept override;
 
     private:
-
         // Fields
         const SharedString _message;
     };
