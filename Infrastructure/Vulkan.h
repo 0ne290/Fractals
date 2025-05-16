@@ -4,6 +4,7 @@
 #include "../Core/Interfaces/ILogger.h"
 #include "JsonSerializer.h"
 #include <memory>
+#include "Converter.h"
 
 namespace Fractals::Infrastructure
 {
@@ -17,7 +18,7 @@ namespace Fractals::Infrastructure
         // Constructors
         Vulkan() = delete;
 
-        Vulkan(const Fractals::Core::Interfaces::SharedILogger&, const Fractals::Infrastructure::SharedJsonSerializer&);
+        Vulkan(const Fractals::Core::Interfaces::SharedILogger&, const Fractals::Infrastructure::SharedJsonSerializer&, const Fractals::Infrastructure::SharedConverter&);
 
         // Copy constructors
         Vulkan(const Vulkan&) = delete;
@@ -33,7 +34,7 @@ namespace Fractals::Infrastructure
         ~Vulkan();
 
         // Methods
-        static SharedVulkan Create(const Fractals::Core::Interfaces::SharedILogger&, const Fractals::Infrastructure::SharedJsonSerializer&);
+        static SharedVulkan Create(const Fractals::Core::Interfaces::SharedILogger&, const Fractals::Infrastructure::SharedJsonSerializer&, const Fractals::Infrastructure::SharedConverter&);
 
         void LogPhysicalDevices() const;
 
@@ -43,7 +44,7 @@ namespace Fractals::Infrastructure
 
     private:
         // Methods
-        void createInstance();
+        void setupInstance();
 
         //void createLogicDevice();
 
@@ -53,5 +54,7 @@ namespace Fractals::Infrastructure
         const Fractals::Core::Interfaces::SharedILogger _logger;
 
         const Fractals::Infrastructure::SharedJsonSerializer _jsonSerializer;
+
+        const Fractals::Infrastructure::SharedConverter _converter;
 	};
 }

@@ -106,4 +106,9 @@ namespace Fractals::Infrastructure
 
         return ret;
     }
+
+    SharedString JsonSerializer::ErrorDetailToJson(const SharedString errorDetail)
+    {
+        return MAKE_SHARED_STRING(std::format(R"({{"errorDetail":"{}"}})", *errorDetail));
+    }
 }

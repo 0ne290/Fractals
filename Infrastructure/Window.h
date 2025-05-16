@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include "../Core/Interfaces/ILogger.h"
 
+// GLFW for Vulkan
 namespace Fractals::Infrastructure
 {
     class Window;

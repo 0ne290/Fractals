@@ -8,14 +8,14 @@
 
 namespace Fractals::Infrastructure
 {
-    Vulkan::Vulkan(const Fractals::Core::Interfaces::SharedILogger& logger, const Fractals::Infrastructure::SharedJsonSerializer& jsonSerializer)
-        : _logger(logger), _jsonSerializer(jsonSerializer) {
+    Vulkan::Vulkan(const Fractals::Core::Interfaces::SharedILogger& logger, const Fractals::Infrastructure::SharedJsonSerializer& jsonSerializer, const Fractals::Infrastructure::SharedConverter& converter)
+        : _logger(logger), _jsonSerializer(jsonSerializer), _converter(converter) {
     }
 
-    SharedVulkan Vulkan::Create(const Fractals::Core::Interfaces::SharedILogger& logger, const Fractals::Infrastructure::SharedJsonSerializer& jsonSerializer)
+    SharedVulkan Vulkan::Create(const Fractals::Core::Interfaces::SharedILogger& logger, const Fractals::Infrastructure::SharedJsonSerializer& jsonSerializer, const Fractals::Infrastructure::SharedConverter& converter)
 	{
-        const auto ret = MAKE_SHARED_VULKAN(logger, jsonSerializer);
-		ret->createInstance();
+        const auto ret = MAKE_SHARED_VULKAN(logger, jsonSerializer, converter);
+		ret->setupInstance();
 		logger->Info(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "vulkan created"));
 
 		return ret;
@@ -27,19 +27,19 @@ namespace Fractals::Infrastructure
 		_logger->Info(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "vulkan destroyed"));
 	}
 
-    void Vulkan::createInstance() {
+    void Vulkan::setupInstance() {
         // Get layer names for enable them all
         uint32_t layerCount;
         auto result = vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
         if (result != VK_SUCCESS) {
-            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "failed to get layer count"));
+            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "failed to get layer count", _jsonSerializer->ErrorDetailToJson(_converter->ToString(result))));
         }
 
         SharedVector<VkLayerProperties> layers = MAKE_SHARED_VECTOR(VkLayerProperties)(layerCount);
         SharedVector<const char*> layerNames = MAKE_SHARED_VECTOR(const char*)(layerCount);
         result = vkEnumerateInstanceLayerProperties(&layerCount, layers->data());
         if (result != VK_SUCCESS) {
-            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "failed to get layers"));
+            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "failed to get layers", _jsonSerializer->ErrorDetailToJson(_converter->ToString(result))));
         }
         for (auto i = 0; i < layerCount; i++) {
             (*layerNames)[i] = (*layers)[i].layerName;
@@ -53,14 +53,14 @@ namespace Fractals::Infrastructure
         uint32_t extensionCount;
         result = vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
         if (result != VK_SUCCESS) {
-            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "failed to get extension count"));
+            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "failed to get extension count", _jsonSerializer->ErrorDetailToJson(_converter->ToString(result))));
         }
 
         SharedVector<VkExtensionProperties> extensions = MAKE_SHARED_VECTOR(VkExtensionProperties)(extensionCount);
         SharedVector<const char*> extensionNames = MAKE_SHARED_VECTOR(const char*)(extensionCount);
         result = vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions->data());
         if (result != VK_SUCCESS) {
-            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "failed to get extensions"));
+            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "failed to get extensions", _jsonSerializer->ErrorDetailToJson(_converter->ToString(result))));
         }
         for (auto i = 0; i < extensionCount; i++) {
             (*extensionNames)[i] = (*extensions)[i].extensionName;
@@ -85,10 +85,10 @@ namespace Fractals::Infrastructure
 
         result = vkCreateInstance(&createInfo, nullptr, &instance);
         if (result != VK_SUCCESS)
-            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "failed to create instance", R"({})"));
+            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "failed to setup instance", _jsonSerializer->ErrorDetailToJson(_converter->ToString(result))));
 
         _instance = instance;
-        _logger->Debug(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "instance created"));
+        _logger->Debug(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "instance setuped"));
     }
 
     void Vulkan::LogPhysicalDevices() const
