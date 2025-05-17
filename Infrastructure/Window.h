@@ -1,7 +1,11 @@
 #pragma once
+
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
 #include <memory>
 #include <cstdint>
-#include <GLFW/glfw3.h>
 #include "../Core/Interfaces/ILogger.h"
 
 // GLFW for Vulkan
@@ -17,7 +21,7 @@ namespace Fractals::Infrastructure
         // Constructors
         Window() = delete;
 
-        Window(const Fractals::Core::Interfaces::SharedILogger&, GLFWwindow*&);
+        Window(const Fractals::Core::Interfaces::SharedILogger&, GLFWwindow*const&);
 
         // Copy constructors
         Window(const Window&) = delete;
@@ -34,6 +38,8 @@ namespace Fractals::Infrastructure
 
         // Methods
         static SharedWindow Create(const Fractals::Core::Interfaces::SharedILogger&, const uint32_t&, const uint32_t&);
+
+        HWND GetHwnd();
 
         void Loop();
 

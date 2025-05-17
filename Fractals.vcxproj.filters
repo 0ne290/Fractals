@@ -30,13 +30,16 @@
     <ClCompile Include="Infrastructure\Converter.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Infrastructure\Vulkan.cpp">
+    <ClCompile Include="Infrastructure\VulkanRenderer.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Core\Interfaces\ILogger.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Infrastructure\Window.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Desktop\Application.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,13 +59,16 @@
     <ClInclude Include="Infrastructure\Converter.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Infrastructure\Vulkan.h">
+    <ClInclude Include="Infrastructure\VulkanRenderer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Core\Typedefs.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Infrastructure\Window.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Desktop\Application.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

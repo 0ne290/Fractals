@@ -35,14 +35,9 @@ namespace Fractals::Infrastructure
         // Methods
         static SharedJsonSerializer Create(const Fractals::Infrastructure::SharedConverter&);
 
-        SharedString ToJson(const SharedVector<VkPhysicalDevice>,
-            void (*const getProperties)(const VkPhysicalDevice, VkPhysicalDeviceProperties*));
+        SharedString ToJson(const SharedVector<const char*>);
 
-        SharedString ToJson(const SharedVector<VkLayerProperties>);
-
-        SharedString ToJson(const SharedVector<VkExtensionProperties>);
-
-        SharedString ErrorDetailToJson(const SharedString);
+        SharedString ToJson(const SharedString);
 
     private:
         // Fields

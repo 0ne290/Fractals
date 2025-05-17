@@ -1,11 +1,10 @@
 #include "Window.h"
 #include <cstdint>
-#include <GLFW/glfw3.h>
 #include "../Core/Interfaces/ILogger.h"
 
 namespace Fractals::Infrastructure
 {
-	Window::Window(const Fractals::Core::Interfaces::SharedILogger& logger, GLFWwindow*& window)
+	Window::Window(const Fractals::Core::Interfaces::SharedILogger& logger, GLFWwindow*const& window)
 		: _logger(logger), _window(window) {}
 
 	Window::~Window()
@@ -29,6 +28,11 @@ namespace Fractals::Infrastructure
 		logger->Info(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("glfw", "window created"));
 
 		return MAKE_SHARED_WINDOW(logger, window);
+	}
+
+	HWND Window::GetHwnd()
+	{
+		return glfwGetWin32Window(_window);
 	}
 
 	void Window::Loop()

@@ -159,23 +159,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Desktop\Application.cpp" />
     <ClCompile Include="Core\Exceptions\Critical.cpp" />
     <ClCompile Include="Core\Interfaces\ILogger.cpp" />
     <ClCompile Include="Desktop\Main.cpp" />
     <ClCompile Include="Infrastructure\Converter.cpp" />
     <ClCompile Include="Infrastructure\JsonSerializer.cpp" />
     <ClCompile Include="Infrastructure\Logger.cpp" />
-    <ClCompile Include="Infrastructure\Vulkan.cpp" />
+    <ClCompile Include="Infrastructure\VulkanRenderer.cpp" />
     <ClCompile Include="Infrastructure\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Desktop\Application.h" />
     <ClInclude Include="Core\Exceptions\Critical.h" />
     <ClInclude Include="Core\Interfaces\ILogger.h" />
     <ClInclude Include="Core\Typedefs.h" />
     <ClInclude Include="Infrastructure\Converter.h" />
     <ClInclude Include="Infrastructure\JsonSerializer.h" />
     <ClInclude Include="Infrastructure\Logger.h" />
-    <ClInclude Include="Infrastructure\Vulkan.h" />
+    <ClInclude Include="Infrastructure\VulkanRenderer.h" />
     <ClInclude Include="Infrastructure\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
