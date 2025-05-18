@@ -49,6 +49,8 @@ namespace Fractals::Infrastructure
         // Methods
         void setupInstance();
 
+        void setupPhysicalDevice();
+
         void setupSurface(const HWND);
 
         //void createLogicDevice();
@@ -56,12 +58,12 @@ namespace Fractals::Infrastructure
         // Fields
         VkInstance _instance;
 
+        VkPhysicalDevice _physicalDevice;
+
         const Fractals::Core::Interfaces::SharedILogger _logger;
 
         const Fractals::Infrastructure::SharedJsonSerializer _jsonSerializer;
 
         const Fractals::Infrastructure::SharedConverter _converter;
-
-        bool _isCreated;
 	};
 }

@@ -9,7 +9,7 @@
 namespace Fractals::Infrastructure
 {
     VulkanRenderer::VulkanRenderer(const Fractals::Core::Interfaces::SharedILogger& logger, const Fractals::Infrastructure::SharedJsonSerializer& jsonSerializer, const Fractals::Infrastructure::SharedConverter& converter)
-        : _instance(nullptr), _logger(logger), _jsonSerializer(jsonSerializer), _converter(converter), _isCreated(false) {
+        : _instance(nullptr), _physicalDevice(nullptr), _logger(logger), _jsonSerializer(jsonSerializer), _converter(converter) {
     }
 
     SharedVulkan VulkanRenderer::Create(const Fractals::Core::Interfaces::SharedILogger& logger,
@@ -19,8 +19,8 @@ namespace Fractals::Infrastructure
 	{
         const auto ret = MAKE_SHARED_VULKAN_RENDERER(logger, jsonSerializer, converter);
 		ret->setupInstance();
+        ret->setupPhysicalDevice();
         ret->setupSurface(hwnd);
-        ret->_isCreated = true;
 		logger->Info(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "renderer created"));
 
 		return ret;
@@ -28,17 +28,18 @@ namespace Fractals::Infrastructure
 
 	VulkanRenderer::~VulkanRenderer()
 	{
-        if (_isCreated)
+        if (_instance != nullptr)
         {
 			vkDestroyInstance(_instance, nullptr);
 			_logger->Info(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "renderer destroyed"));
         }
 	}
 
-    void VulkanRenderer::setupInstance() {
+    void VulkanRenderer::setupInstance()
+    {
         // Layers
 #ifdef _DEBUG
-        const SharedVector<const char*> layers = MAKE_SHARED_VECTOR(const char*)(std::initializer_list<const char*>{ "VK_LAYER_KHRON{}{}OS_validation", "VK_LAYER_LUNARG_api_dump" });
+        const SharedVector<const char*> layers = MAKE_SHARED_VECTOR(const char*)(std::initializer_list<const char*>{ "VK_LAYER_KHRONOS_validation", "VK_LAYER_LUNARG_api_dump" });
 #else
         const SharedVector<const char*> layers = MAKE_SHARED_VECTOR(const char*)();
 #endif // DEBUG
@@ -65,10 +66,49 @@ namespace Fractals::Infrastructure
 
         const auto result = vkCreateInstance(&createInfo, nullptr, &instance);
         if (result != VK_SUCCESS)
-            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "setup instance error", *_jsonSerializer->ToJson(_converter->ToString(result))));
+            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "create instance error", *_jsonSerializer->WrapInQuotes(_converter->ToString(result))));
 
         _instance = instance;
         _logger->Debug(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "instance setuped"));
+    }
+
+    void VulkanRenderer::setupPhysicalDevice()
+    {
+		uint32_t physicalDeviceCount;
+		auto result = vkEnumeratePhysicalDevices(_instance, &physicalDeviceCount, nullptr);
+        if (result != VK_SUCCESS)
+            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "get physical device count error", *_jsonSerializer->WrapInQuotes(_converter->ToString(result))));
+        if (physicalDeviceCount < 1)
+            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "physical devices not found"));
+
+        SharedVector<VkPhysicalDevice> physicalDevices = MAKE_SHARED_VECTOR(VkPhysicalDevice)(physicalDeviceCount);
+		result = vkEnumeratePhysicalDevices(_instance, &physicalDeviceCount, physicalDevices->data());
+        if (result != VK_SUCCESS)
+            throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "get physical devices error", *_jsonSerializer->WrapInQuotes(_converter->ToString(result))));
+
+        const Shared<VkPhysicalDeviceProperties> properties = MAKE_SHARED(VkPhysicalDeviceProperties)();
+        const Shared<VkPhysicalDeviceFeatures> features = MAKE_SHARED(VkPhysicalDeviceFeatures)();
+         ;
+        for (auto physicalDevice : *physicalDevices)
+        {
+            vkGetPhysicalDeviceProperties(physicalDevice, properties.get());
+            if (properties->deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+            {
+                vkGetPhysicalDeviceFeatures(physicalDevice, features.get());
+
+                const auto propertiesJson = _jsonSerializer->ToJson(properties);
+                _logger->Trace(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "physical device properties", *propertiesJson));
+				const auto featuresJson = _jsonSerializer->ToJson(features);
+                _logger->Trace(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "physical device features", *featuresJson));
+
+                _physicalDevice = physicalDevice;
+                _logger->Debug(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "physical device setuped"));
+
+                return;
+            }
+        }
+
+        throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "discrete gpu not found"));
     }
 
 	void VulkanRenderer::setupSurface(const HWND hwnd)

@@ -30,7 +30,7 @@ int main()
     }
 	catch (const std::exception& e)
 	{
-		logger->Critical(CREATE_LOG_MESSAGE_WITH_PAYLOAD("main", "uncaught exception", *jsonSerializer->ToJson(MAKE_SHARED_STRING(e.what()))));
+		logger->Critical(CREATE_LOG_MESSAGE_WITH_PAYLOAD("main", "uncaught exception", *jsonSerializer->WrapInQuotes(MAKE_SHARED_STRING(e.what()))));
 
 		return 2;
 	}

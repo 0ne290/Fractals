@@ -38,6 +38,8 @@ namespace Fractals::Infrastructure
 
         SharedString ToString(const VkResult);
 
+        SharedString ToString(const VkBool32);
+
     private:
         // Fields
         const Fractals::Core::Interfaces::SharedILogger _logger;

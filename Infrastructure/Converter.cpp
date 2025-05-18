@@ -15,6 +15,27 @@ namespace Fractals::Infrastructure
         return MAKE_SHARED_CONVERTER(logger);
     }
 
+	SharedString Converter::ToString(const VkPhysicalDeviceType deviceType)
+	{
+		static const std::unordered_map<VkPhysicalDeviceType, SharedString> deviceTypes
+		{
+			{VK_PHYSICAL_DEVICE_TYPE_OTHER, MAKE_SHARED_STRING("OTHER")},
+			{VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU, MAKE_SHARED_STRING("INTEGRATED_GPU")},
+			{VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU, MAKE_SHARED_STRING("DISCRETE_GPU")},
+			{VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU, MAKE_SHARED_STRING("VIRTUAL_GPU")},
+			{VK_PHYSICAL_DEVICE_TYPE_CPU, MAKE_SHARED_STRING("CPU")}
+		};
+		static const auto unknownDeviceTypeRet = MAKE_SHARED_STRING("UNKNOWN");
+		static const auto unknownDeviceTypeLogMessage = CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("converter", "unknown VkPhysicalDeviceType");
+
+		if (deviceTypes.contains(deviceType))
+			return deviceTypes.at(deviceType);
+
+		_logger->Error(unknownDeviceTypeLogMessage);
+
+		return unknownDeviceTypeRet;
+	}
+
     SharedString Converter::ToString(const VkResult result)
     {
 		static const std::unordered_map<VkResult, SharedString> results
@@ -88,5 +109,13 @@ namespace Fractals::Infrastructure
         _logger->Error(unknownResultLogMessage);
 
         return unknownResultRet;
+    }
+
+    SharedString Converter::ToString(const VkBool32 bool_)
+    {
+		static const auto false_ = MAKE_SHARED_STRING("false");
+		static const auto true_ = MAKE_SHARED_STRING("true");
+
+		return bool_ > 0 ? true_ : false_;
     }
 }

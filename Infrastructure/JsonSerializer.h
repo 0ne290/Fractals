@@ -4,7 +4,6 @@
 #include "Converter.h"
 #include <memory>
 
-// Required GLFW
 namespace Fractals::Infrastructure
 {
     class JsonSerializer;
@@ -37,7 +36,11 @@ namespace Fractals::Infrastructure
 
         SharedString ToJson(const SharedVector<const char*>);
 
-        SharedString ToJson(const SharedString);
+        SharedString WrapInQuotes(const SharedString);
+
+        SharedString ToJson(const Shared<VkPhysicalDeviceProperties>);
+
+        SharedString ToJson(const Shared<VkPhysicalDeviceFeatures>);
 
     private:
         // Fields
