@@ -51,6 +51,8 @@ namespace Fractals::Infrastructure
 
         void setupPhysicalDevice();
 
+        void setupLogicalDevice();
+
         void setupSurface(const HWND);
 
         //void createLogicDevice();
@@ -59,6 +61,8 @@ namespace Fractals::Infrastructure
         VkInstance _instance;
 
         VkPhysicalDevice _physicalDevice;
+
+        VkDevice _logicalDevice;
 
         const Fractals::Core::Interfaces::SharedILogger _logger;
 
