@@ -20,7 +20,7 @@ namespace Fractals::Infrastructure
         const auto ret = MAKE_SHARED_VULKAN_RENDERER(logger, jsonSerializer, converter);
 		ret->setupInstance();
         ret->setupPhysicalDevice();
-        ret->setupLogicalDevice();
+        ret->setupLogicalDeviceAndGraphicQueue();
         ret->setupSurface(hwnd);
 		logger->Info(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "renderer created"));
 
@@ -115,7 +115,7 @@ namespace Fractals::Infrastructure
         throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "discrete gpu not found"));
     }
 
-	void VulkanRenderer::setupLogicalDevice()
+	void VulkanRenderer::setupLogicalDeviceAndGraphicQueue()
 	{
 		uint32_t queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, nullptr);
@@ -130,6 +130,11 @@ namespace Fractals::Infrastructure
             const auto& queueFamily = (*queueFamilies)[queueFamilyIndex];
 			if (!(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT))
                 continue;
+
+
+            const auto queueFamilyPropertiesJson = _jsonSerializer->ToJson(queueFamily);
+            _logger->Trace(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "queue family properties", *queueFamilyPropertiesJson));
+
 
             VkDevice logicalDevice;
 
@@ -148,7 +153,7 @@ namespace Fractals::Infrastructure
             vkGetPhysicalDeviceFeatures(_physicalDevice, features.get());
 			const auto featuresJson = _jsonSerializer->ToJson(features);
 			_logger->Trace(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "physical device features", *featuresJson));
-		
+            
             const VkDeviceCreateInfo logicalDeviceCreateInfo =
             {
                 VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
@@ -166,9 +171,17 @@ namespace Fractals::Infrastructure
 			const auto result = vkCreateDevice(_physicalDevice, &logicalDeviceCreateInfo, nullptr, &logicalDevice);
 			if (result != VK_SUCCESS)
 				throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "create logical device error", *_jsonSerializer->WrapInQuotes(_converter->ToString(result))));
+            
+			
+            VkQueue graphicQueue;
 
-			_logicalDevice = logicalDevice;
-			_logger->Debug(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "logical device setuped"));
+			vkGetDeviceQueue(logicalDevice, queueFamilyIndex, 0, &graphicQueue);
+
+			
+            _logicalDevice = logicalDevice;
+            _graphicQueue = graphicQueue;
+			_logger->Debug(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "logical device and graphic queue setuped"));
+
 
             return;
         }

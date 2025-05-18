@@ -42,6 +42,10 @@ namespace Fractals::Infrastructure
 
         SharedString ToJson(const Shared<VkPhysicalDeviceFeatures>);
 
+        SharedString ToJson(const VkQueueFamilyProperties&);
+
+        SharedString ToJson(const VkExtent3D&);
+
     private:
         // Fields
         const Fractals::Infrastructure::SharedConverter _converter;

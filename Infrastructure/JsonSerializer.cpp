@@ -112,4 +112,25 @@ namespace Fractals::Infrastructure
 			*_converter->ToString(features->inheritedQueries)
 		));
 	}
+
+	SharedString JsonSerializer::ToJson(const VkQueueFamilyProperties& queueFamilyProperties)
+	{
+		return MAKE_SHARED_STRING(std::format(
+			R"({{"queueFlags":{},"queueCount":{},"timestampValidBits":{},"minImageTransferGranularity":{}}})",
+			queueFamilyProperties.queueFlags,
+			queueFamilyProperties.queueCount,
+			queueFamilyProperties.timestampValidBits,
+			*ToJson(queueFamilyProperties.minImageTransferGranularity)
+		));
+	}
+
+	SharedString JsonSerializer::ToJson(const VkExtent3D& extent3D)
+	{
+		return MAKE_SHARED_STRING(std::format(
+			R"({{"width":{},"height":{},"depth":{}}})",
+			extent3D.width,
+			extent3D.height,
+			extent3D.depth
+		));
+	}
 }
