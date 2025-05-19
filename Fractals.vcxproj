@@ -167,7 +167,7 @@
     <ClCompile Include="Infrastructure\JsonSerializer.cpp" />
     <ClCompile Include="Infrastructure\Logger.cpp" />
     <ClCompile Include="Infrastructure\VulkanRenderer.cpp" />
-    <ClCompile Include="Infrastructure\Window.cpp" />
+    <ClCompile Include="Infrastructure\GlfwWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Desktop\Application.h" />
@@ -178,7 +178,7 @@
     <ClInclude Include="Infrastructure\JsonSerializer.h" />
     <ClInclude Include="Infrastructure\Logger.h" />
     <ClInclude Include="Infrastructure\VulkanRenderer.h" />
-    <ClInclude Include="Infrastructure\Window.h" />
+    <ClInclude Include="Infrastructure\GlfwWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

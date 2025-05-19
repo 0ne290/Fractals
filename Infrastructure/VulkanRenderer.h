@@ -39,7 +39,7 @@ namespace Fractals::Infrastructure
         static SharedVulkan Create(const Fractals::Core::Interfaces::SharedILogger&,
             const Fractals::Infrastructure::SharedJsonSerializer&,
             const Fractals::Infrastructure::SharedConverter&,
-            const HWND);
+            const SharedGlfwWindow window);
 
         //void LogExtensions() const;
 
@@ -47,24 +47,26 @@ namespace Fractals::Infrastructure
 
     private:
         // Methods
-        void setupInstance();
+        void setupInstance(const SharedVector<const char*>);
 
         void setupPhysicalDevice();
 
-        void setupLogicalDeviceAndGraphicQueue();
-
-        void setupSurface(const HWND);
+        void setupLogicalDeviceAndQueues();
 
         //void createLogicDevice();
 
         // Fields
         VkInstance _instance;
 
+        VkSurfaceKHR _surface;
+
         VkPhysicalDevice _physicalDevice;
 
         VkDevice _logicalDevice;
 
         VkQueue _graphicQueue;
+
+        VkQueue _presentationQueue;
 
         const Fractals::Core::Interfaces::SharedILogger _logger;
 

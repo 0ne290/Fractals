@@ -36,7 +36,7 @@
     <ClCompile Include="Core\Interfaces\ILogger.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Infrastructure\Window.cpp">
+    <ClCompile Include="Infrastructure\GlfwWindow.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Desktop\Application.cpp">
@@ -65,7 +65,7 @@
     <ClInclude Include="Core\Typedefs.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Infrastructure\Window.h">
+    <ClInclude Include="Infrastructure\GlfwWindow.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Desktop\Application.h">

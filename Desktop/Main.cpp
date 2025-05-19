@@ -5,6 +5,7 @@
 #include "../Infrastructure/Logger.h"
 #include "../Infrastructure/Window.h"
 #include "../Infrastructure/VulkanRenderer.h"
+#include <iostream>
 
 int main()
 {
@@ -15,8 +16,8 @@ int main()
 
     try
     {
-        const auto window = Fractals::Infrastructure::Window::Create(logger, 800, 600);
-        const auto renderer = Fractals::Infrastructure::VulkanRenderer::Create(logger, jsonSerializer, converter, window->GetHwnd());
+		const auto window = Fractals::Infrastructure::Window::Create(logger, 800, 600);
+        const auto renderer = Fractals::Infrastructure::VulkanRenderer::Create(logger, jsonSerializer, converter, window->GetRequiredExtensionsToAttachVulkanRenderer(), window->GetHwnd());
 
         window->Loop();
 
