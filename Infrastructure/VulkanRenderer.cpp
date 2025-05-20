@@ -6,6 +6,7 @@
 #include <vulkan/vulkan_core.h>
 #include <cstdint>
 #include "GlfwWindow.h"
+#include <unordered_map>
 
 namespace Fractals::Infrastructure
 {
@@ -125,28 +126,35 @@ namespace Fractals::Infrastructure
 	{
 		uint32_t queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, nullptr);
+
         if (queueFamilyCount < 1)
             throw Fractals::Core::Exceptions::Critical::Create(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "queue families not found"));
-
-        SharedVector<VkQueueFamilyProperties> queueFamilies = MAKE_SHARED_VECTOR(VkQueueFamilyProperties)(queueFamilyCount);
+        
+		SharedVector<VkQueueFamilyProperties> queueFamilies = MAKE_SHARED_VECTOR(VkQueueFamilyProperties)(queueFamilyCount);
 		vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, queueFamilies->data());
         
+
         uint32_t graphicQueueFamilyIndex;
         bool graphicQueueFamilyIndexIsFound(false);
+
         uint32_t presentationQueueFamilyIndex;
         bool presentationQueueFamilyIndexIsFound(false);
+		
+		std::unordered_map<uint32_t, uint32_t> queueCountsByFamilyIndexes;
+
         for (uint32_t queueFamilyIndex = 0; queueFamilyIndex < queueFamilyCount; queueFamilyIndex++)
         {
             const auto& queueFamily = (*queueFamilies)[queueFamilyIndex];
 
             if (!graphicQueueFamilyIndexIsFound && (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT))
             {
-                graphicQueueFamilyIndex = queueFamilyIndex;
-
-				const auto queueFamilyPropertiesJson = _jsonSerializer->ToJson(queueFamily);
+                const auto queueFamilyPropertiesJson = _jsonSerializer->ToJson(queueFamily);
 				_logger->Trace(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "graphic queue family properties", *queueFamilyPropertiesJson));
             
+				graphicQueueFamilyIndex = queueFamilyIndex;
 				graphicQueueFamilyIndexIsFound = true;
+				
+				queueCountsByFamilyIndexes.insert({ queueFamilyIndex, queueFamily.queueCount });
 
 				if (presentationQueueFamilyIndexIsFound)
 					break;
@@ -156,12 +164,13 @@ namespace Fractals::Infrastructure
 			vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevice, queueFamilyIndex, _surface, &presentationSupport);
 			if (!presentationQueueFamilyIndexIsFound && presentationSupport)
 			{
-				presentationQueueFamilyIndex = queueFamilyIndex;
-
 				const auto queueFamilyPropertiesJson = _jsonSerializer->ToJson(queueFamily);
 				_logger->Trace(CREATE_LOG_MESSAGE_WITH_PAYLOAD("vulkan", "presentation queue family properties", *queueFamilyPropertiesJson));
 
+				presentationQueueFamilyIndex = queueFamilyIndex;
 				presentationQueueFamilyIndexIsFound = true;
+
+				queueCountsByFamilyIndexes.insert({ queueFamilyIndex, queueFamily.queueCount });
 
 				if (graphicQueueFamilyIndexIsFound)
 					break;
@@ -175,16 +184,20 @@ namespace Fractals::Infrastructure
 
 		VkDevice logicalDevice;
 
+		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 		const auto queuePriority = 1.0f;
-		const VkDeviceQueueCreateInfo queueCreateInfo =
-		{
-			VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-			nullptr,
-			0,
-			queueFamilyIndex,
-			1,//queueFamily.queueCount,
-			&queuePriority
-		};
+		for (const auto& [queueFamilyIndex, queueCount] : queueCountsByFamilyIndexes) {
+			const VkDeviceQueueCreateInfo queueCreateInfo =
+			{
+				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+				nullptr,
+				0,
+				queueFamilyIndex,
+				queueCount,
+				&queuePriority
+			};
+			queueCreateInfos.push_back(queueCreateInfo);
+		}
 
 		const Shared<VkPhysicalDeviceFeatures> features = MAKE_SHARED(VkPhysicalDeviceFeatures)();
 		vkGetPhysicalDeviceFeatures(_physicalDevice, features.get());
@@ -196,8 +209,8 @@ namespace Fractals::Infrastructure
 			VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 			nullptr,
 			0,
-			1,
-			&queueCreateInfo,
+			static_cast<uint32_t>(queueCreateInfos.size()),
+			queueCreateInfos.data(),
 			0,
 			nullptr,
 			0,
@@ -211,12 +224,15 @@ namespace Fractals::Infrastructure
 
 
 		VkQueue graphicQueue;
+		vkGetDeviceQueue(logicalDevice, graphicQueueFamilyIndex, 0, &graphicQueue);
 
-		vkGetDeviceQueue(logicalDevice, queueFamilyIndex, 0, &graphicQueue);
+		VkQueue presentationQueue;
+		vkGetDeviceQueue(logicalDevice, presentationQueueFamilyIndex, 0, &presentationQueue);
 
 
 		_logicalDevice = logicalDevice;
 		_graphicQueue = graphicQueue;
-		_logger->Debug(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "logical device and graphic queue setuped"));
+		_presentationQueue = presentationQueue;
+		_logger->Debug(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "logical device and queues setuped"));
 	}
 }
