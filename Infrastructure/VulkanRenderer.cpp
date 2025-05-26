@@ -24,6 +24,7 @@ namespace Fractals::Infrastructure
         ret->_surface = window->CreateVulkanSurface(ret->_instance);
         ret->setupPhysicalDevice();
         ret->setupLogicalDeviceAndQueues();
+		ret->setupSwapchain();
 		logger->Info(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "renderer created"));
 
 		return ret;
@@ -181,6 +182,10 @@ namespace Fractals::Infrastructure
 
 		VkDevice logicalDevice;
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+		const std::vector<const char*> deviceExtensions =
+		{
+			VK_KHR_SWAPCHAIN_EXTENSION_NAME
+		};
 		const Shared<VkPhysicalDeviceFeatures> features = MAKE_SHARED(VkPhysicalDeviceFeatures)();
 		
 		const auto queuePriority = 1.0f;
@@ -218,8 +223,8 @@ namespace Fractals::Infrastructure
 			queueCreateInfos.data(),
 			0,
 			nullptr,
-			0,
-			nullptr,
+			static_cast<uint32_t>(deviceExtensions.size()),
+			deviceExtensions.data(),
 			features.get()
 		};
 		const auto result = vkCreateDevice(_physicalDevice, &logicalDeviceCreateInfo, nullptr, &logicalDevice);
@@ -238,5 +243,23 @@ namespace Fractals::Infrastructure
 		_graphicQueue = graphicQueue;
 		_presentationQueue = presentationQueue;
 		_logger->Debug(CREATE_LOG_MESSAGE_WITHOUT_PAYLOAD("vulkan", "logical device and queues setuped"));
+	}
+
+	void VulkanRenderer::setupSwapchain()
+	{
+		const VkSwapchainCreateInfoKHR createInfo
+		{
+			VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+			nullptr,
+			0,
+			_surface,
+			2,// Двойная буферизация
+			VK_FORMAT_R8G8B8A8_SRGB,// RGB-A
+			VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,// RGB-A
+			{ 1337, 228 },// Заменить
+			1,// 1 - для рендеринга любых не стереоскопических изображений
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+
+		};
 	}
 }

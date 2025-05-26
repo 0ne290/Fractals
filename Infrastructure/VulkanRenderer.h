@@ -53,6 +53,8 @@ namespace Fractals::Infrastructure
 
         void setupLogicalDeviceAndQueues();
 
+        void setupSwapchain();
+
         //void createLogicDevice();
 
         // Fields
@@ -64,9 +66,9 @@ namespace Fractals::Infrastructure
 
         VkDevice _logicalDevice;
 
-        VkQueue _graphicQueue;
+        VkQueue _graphicQueue, _presentationQueue;
 
-        VkQueue _presentationQueue;
+        VkSwapchainKHR _swapchain;
 
         const Fractals::Core::Interfaces::SharedILogger _logger;
 
